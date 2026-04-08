@@ -33,6 +33,11 @@ namespace WorshipSet.Application
 
         public virtual async Task Update(T entity)
         {
+            var localEntity = _dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
+
+            if (localEntity != null)
+                _context.Entry(localEntity).State = EntityState.Detached;
+
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
