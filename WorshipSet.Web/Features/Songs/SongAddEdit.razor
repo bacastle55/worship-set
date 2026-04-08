@@ -1,0 +1,197 @@
+﻿@attribute [Route(Navigation.Songs + Navigation.AddEdit)]
+@attribute [Route(Navigation.Songs + Navigation.AddEdit + Navigation.IdParam)]
+
+@using System.ComponentModel.DataAnnotations
+@using WorshipSet.Domain.Songs
+@using WorshipSet.Application.Features.Songs
+
+@inject ISongRepository SongRepository
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(isEditMode ? "Edit Song" : "Add Song")</PageTitle>
+
+<div class="min-h-screen bg-neutral-100">
+	<div class="mx-auto max-w-5xl px-6 py-10">
+		<div class="mb-10 flex items-start justify-between">
+			<div>
+				<div class="text-sm font-semibold tracking-[0.2em] text-accent-500 uppercase">
+					WorshipSet
+				</div>
+
+				<h1 class="mt-3 text-4xl font-semibold text-primary-900">
+					@(isEditMode ? "Edit Song" : "Add Song")
+				</h1>
+
+				<p class="mt-2 text-neutral-600">
+					@(isEditMode
+						? "Update song details and images."
+						: "Add a new song to your worship library.")
+				</p>
+			</div>
+
+			<a href="/songs"
+				   class="rounded-xl border border-neutral-200 bg-surface px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">
+				Back
+			</a>
+		</div>
+
+		<div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
+			<!-- FORM -->
+			<div class="rounded-[2rem] border border-neutral-200 bg-surface p-8 shadow-sm">
+				@if (isLoading)
+				{
+					<p class="text-neutral-600">Loading...</p>
+				}
+				else
+				{
+					<EditForm Model="formModel" OnValidSubmit="Save">
+						<DataAnnotationsValidator />
+
+						<div class="space-y-6">
+							<!-- TITLE -->
+							<div>
+								<label class="text-sm font-semibold text-primary-900">Title</label>
+								<InputText @bind-Value="formModel.Title"
+										   class="mt-2 w-full rounded-xl border border-neutral-200 px-4 py-3 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/10" />
+								<ValidationMessage For="@(() => formModel.Title)" />
+							</div>
+
+							<!-- COMPOSER -->
+							<div>
+								<label class="text-sm font-semibold text-primary-900">Composer</label>
+								<InputText @bind-Value="formModel.Composer"
+										   class="mt-2 w-full rounded-xl border border-neutral-200 px-4 py-3 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/10" />
+							</div>
+
+							<!-- IMAGES -->
+							<div>
+								<div class="flex items-center justify-between">
+									<label class="text-sm font-semibold text-primary-900">Images</label>
+
+									<button type="button"
+											class="text-sm font-semibold text-accent-500 hover:text-accent-600"
+											@onclick="AddImage">
+										Add
+									</button>
+								</div>
+
+								<div class="mt-3 space-y-3">
+									@for (int i = 0; i < formModel.ImagePaths.Count; i++)
+									{
+										var index = i;
+
+										<div class="flex gap-3">
+											<InputText @bind-Value="formModel.ImagePaths[index]"
+													   class="w-full rounded-xl border border-neutral-200 px-4 py-2" />
+
+											<button type="button"
+													class="rounded-xl border border-neutral-200 px-3 text-sm hover:bg-neutral-50"
+													@onclick="() => RemoveImage(index)">
+												X
+											</button>
+										</div>
+									}
+								</div>
+							</div>
+
+							<!-- ACTIONS -->
+							<div class="flex gap-3 pt-4">
+								<button type="submit"
+										class="rounded-xl bg-accent-500 px-5 py-3 font-semibold text-white hover:bg-accent-600">
+									@(isEditMode ? "Save Changes" : "Create Song")
+								</button>
+
+								<a href="/songs"
+									   class="rounded-xl border border-neutral-200 px-5 py-3 font-semibold text-neutral-700 hover:bg-neutral-50">
+									Cancel
+								</a>
+							</div>
+						</div>
+					</EditForm>
+				}
+			</div>
+
+			<!-- PREVIEW -->
+			<div class="rounded-[2rem] border border-neutral-200 bg-surface p-6 shadow-sm">
+				<div class="text-sm tracking-[0.14em] text-neutral-400 uppercase">
+					Preview
+				</div>
+
+				<div class="mt-4 overflow-hidden rounded-2xl border border-neutral-200">
+					@if (firstImage != null)
+					{
+						<img src="@firstImage" class="h-40 w-full object-cover" />
+					}
+					else
+					{
+						<div class="flex h-40 items-center justify-center bg-primary-900 text-3xl text-gold-500">
+							♪
+						</div>
+					}
+
+					<div class="p-4">
+						<div class="text-lg font-semibold text-primary-900">
+							@(formModel.Title ?? "Song Title")
+						</div>
+
+						<div class="text-sm text-neutral-500">
+							@(string.IsNullOrWhiteSpace(formModel.Composer)
+								? "Composer"
+								: formModel.Composer)
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public int? Id { get; set; }
+
+	bool isEditMode => Id.HasValue;
+	bool isLoading = true;
+
+	Song formModel = new()
+	{
+		Title = "",
+		ImagePaths = []
+	};
+
+	string? firstImage => formModel.ImagePaths.FirstOrDefault();
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (isEditMode)
+		{
+			var song = await SongRepository.GetById(Id!.Value);
+			if (song != null)
+			{
+				formModel = new Song
+				{
+					Id = song.Id,
+					Title = song.Title,
+					Composer = song.Composer,
+					ImagePaths = song.ImagePaths ?? []
+				};
+			}
+		}
+
+		isLoading = false;
+	}
+
+	async Task Save()
+	{
+		if (isEditMode)
+			await SongRepository.Update(formModel);
+		else
+			await SongRepository.Add(formModel);
+
+		NavigationManager.NavigateTo("/songs");
+	}
+
+	void AddImage() => formModel.ImagePaths.Add("");
+
+	void RemoveImage(int index) => formModel.ImagePaths.RemoveAt(index);
+}

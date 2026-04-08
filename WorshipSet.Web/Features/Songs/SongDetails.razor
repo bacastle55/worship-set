@@ -1,0 +1,108 @@
+﻿@attribute [Route(Navigation.Songs + Navigation.IdParam)]
+
+@using WorshipSet.Application
+@using WorshipSet.Application.Features.Songs
+@using WorshipSet.Domain.Songs
+
+@inject ISongRepository SongRepository
+
+<PageTitle>@(song?.Title ?? "Song")</PageTitle>
+
+@if (song == null)
+{
+	<div class="flex min-h-screen items-center justify-center bg-neutral-100 px-6">
+		<div class="rounded-[2rem] border border-neutral-200 bg-surface px-8 py-10 text-center shadow-sm">
+			<div class="text-sm font-semibold tracking-[0.16em] text-neutral-400 uppercase">
+				WorshipSet
+			</div>
+
+			<h1 class="mt-3 text-2xl font-semibold tracking-tight text-primary-900">
+				Song not found
+			</h1>
+
+			<p class="mt-2 text-neutral-600">
+				We couldn’t find that song.
+			</p>
+
+			<a href="@Navigation.Songs"
+				   class="mt-6 inline-flex items-center justify-center rounded-2xl bg-primary-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-800">
+				Back to Songs
+			</a>
+		</div>
+	</div>
+}
+else
+{
+	<div class="flex min-h-screen flex-col bg-neutral-100">
+		<div class="border-b border-neutral-200 bg-surface/90 backdrop-blur">
+			<div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 lg:px-8">
+				<div class="min-w-0">
+					<div class="text-sm font-semibold tracking-[0.16em] text-accent-500 uppercase">
+						WorshipSet
+					</div>
+
+					<h1 class="mt-1 truncate text-3xl font-semibold tracking-tight text-primary-900 sm:text-4xl">
+						@song.Title
+					</h1>
+
+					<div class="mt-2 text-base text-neutral-500">
+						@(string.IsNullOrWhiteSpace(song.Composer) ? "Unknown composer" : song.Composer)
+					</div>
+				</div>
+
+				<a href="@Navigation.Songs"
+					   class="inline-flex shrink-0 items-center justify-center rounded-2xl border border-neutral-200 bg-surface px-5 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50">
+					Back
+				</a>
+			</div>
+		</div>
+
+		<div class="flex flex-1 items-center justify-center px-6 py-6 lg:px-8">
+			@if (song.ImagePaths != null && song.ImagePaths.Count > 0)
+			{
+				<div class="flex h-full w-full max-w-7xl items-center justify-center overflow-hidden rounded-[2rem] border border-neutral-200 bg-black shadow-xl">
+					<img src="@song.ImagePaths[0]"
+						 alt="@song.Title"
+						 class="h-full max-h-[calc(100vh-15rem)] w-full object-contain" />
+				</div>
+			}
+			else
+			{
+				<div class="flex h-full min-h-[24rem] w-full max-w-7xl flex-col items-center justify-center rounded-[2rem] border border-neutral-200 bg-surface shadow-sm">
+					<div class="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary-900 text-4xl text-gold-500 shadow-sm">
+						♪
+					</div>
+
+					<h2 class="mt-6 text-2xl font-semibold tracking-tight text-primary-900">
+						No image yet
+					</h2>
+
+					<p class="mt-2 text-neutral-500">
+						Add artwork or sheet music to preview it here.
+					</p>
+				</div>
+			}
+		</div>
+
+		<div class="border-t border-neutral-200 bg-surface">
+			<div class="mx-auto flex max-w-7xl items-center justify-center px-6 py-6 lg:px-8">
+				<button type="button"
+						class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-accent-500 text-2xl text-white shadow-lg shadow-accent-500/20 transition hover:bg-accent-600">
+					▶
+				</button>
+			</div>
+		</div>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	Song? song;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		song = await SongRepository.GetById(Id);
+	}
+}

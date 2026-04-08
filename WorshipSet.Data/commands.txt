@@ -1,0 +1,9 @@
+Add-Migration Name_Of_Migration -Project 'WorshipSet.Data' -StartUpProject 'WorshipSet.Web' 
+
+Remove-Migration -Project 'WorshipSet.Data' -StartUpProject 'WorshipSet.Web' 
+
+Nuget:
+Update-Database -Project 'WorshipSet.Data' -StartUpProject 'WorshipSet.Web' 
+
+Terminal (JetBrains):
+ dotnet  ef database update --project WorshipSet.Data\WorshipSet.Data.csproj --startup-project WorshipSet.Admin\WorshipSet.Admin.csproj --context WorshipSet.Data.DatabaseContext

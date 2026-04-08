@@ -5,6 +5,24 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <UserSecretsId>7bb0fa67-252a-4516-82db-1a6093bf6a52</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.32" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorshipSet.Application\WorshipSet.Application.csproj" />
+    <ProjectReference Include="..\WorshipSet.Data\WorshipSet.Data.csproj" />
+    <ProjectReference Include="..\WorshipSet.Dependencies\WorshipSet.Dependencies.csproj" />
+    <ProjectReference Include="..\WorshipSet.Domain\WorshipSet.Domain.csproj" />
+  </ItemGroup>
 
 </Project>

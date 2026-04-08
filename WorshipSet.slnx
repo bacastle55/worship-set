@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="WorshipSet.Application/WorshipSet.Application.csproj" Id="f8a4dbef-5e64-4265-bb82-67a2385111d5" />
+  <Project Path="WorshipSet.Data/WorshipSet.Data.csproj" Id="87846ae6-79ea-42eb-a5f1-7a46e263577c" />
+  <Project Path="WorshipSet.Dependencies/WorshipSet.Dependencies.csproj" Id="da3e63aa-a9fa-4905-a675-ca986e664d11" />
   <Project Path="WorshipSet.Domain/WorshipSet.Domain.csproj" />
   <Project Path="WorshipSet.Web/WorshipSet.Web.csproj" />
 </Solution>

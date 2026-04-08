@@ -1,9 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using WorshipSet.Application;
+using WorshipSet.Dependencies;
 using WorshipSet.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<WorshipSetContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.MigrationsAssembly("WorshipSet.Data")
+    )
+);
+
+builder.Services.AddApplicationDependencies();
 
 var app = builder.Build();
 

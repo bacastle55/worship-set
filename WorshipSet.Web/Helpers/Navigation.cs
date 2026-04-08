@@ -4,6 +4,7 @@
     {
         public const string Home = "/";
         public const string Songs = "/songs";
+        public const string AddEdit = "/addedit";
         public const string IdParam = "/{id:int}";
     }
 }
