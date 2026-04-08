@@ -1,0 +1,14 @@
+﻿@attribute [Route(Navigation.Songs + Navigation.IdParam)]
+
+<h3>SongDetails</h3>
+
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		
+	}
+}
